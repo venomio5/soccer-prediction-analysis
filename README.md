@@ -14,7 +14,8 @@
 ![xG RMSE](https://img.shields.io/badge/xG_rmse-0.78-green)
 
 ![Calibration Score](https://img.shields.io/badge/calibration-90.1%25-brightgreen)
-![Win Rate](https://img.shields.io/badge/win%20rate-30.33%25-blue)
+![Win Rate](https://img.shields.io/badge/win%20rate-30.33%25-orange)
+![Average Market Odds](https://img.shields.io/badge/average%20market%20odds-10.20-blue)
 ![Total Profit](https://img.shields.io/badge/profit-7.95%25-success)
 
 
