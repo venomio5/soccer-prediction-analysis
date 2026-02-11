@@ -1,124 +1,98 @@
-# ⚽ Soccer Match Prediction
-![Last Commit](https://img.shields.io/github/last-commit/venomio5/soccer-prediction-analysis)
-![GitHub Repo stars](https://img.shields.io/github/stars/venomio5/soccer-prediction-analysis)
-![GitHub forks](https://img.shields.io/github/forks/venomio5/soccer-prediction-analysis)
+# ⚽ Soccer Prediction
 
-![Python Version](https://img.shields.io/badge/python-3.8%2B-blue)
-![Scikit-Learn](https://img.shields.io/badge/scikit--learn-1.3-orange)
-![XGBoost](https://img.shields.io/badge/XGBoost-2.0-green)
-![Pandas](https://img.shields.io/badge/pandas-2.0-blue)
-![NumPy](https://img.shields.io/badge/NumPy-1.24-blue)
+## Why
 
-![Log Loss](https://img.shields.io/badge/log_loss-0.59-green)
-![Goal RMSE](https://img.shields.io/badge/goal_rmse-1.14-yellow)
-![xG RMSE](https://img.shields.io/badge/xG_rmse-0.78-green)
+One of the main reasons I started with this porject was with a financial incentive, which is haivng an edge on the sports trading world.
 
-![Calibration Score](https://img.shields.io/badge/calibration-90.1%25-brightgreen)
-![Win Rate](https://img.shields.io/badge/win%20rate-30.33%25-orange)
-![Average Market Odds](https://img.shields.io/badge/average%20market%20odds-10.20-blue)
-![Average monthly ROI](https://img.shields.io/badge/profit-7.95%25-success)
+And to accomlpish that I created an algorthimic model that gets the truest probabilisties for a match for then to be used as odds and trade.
 
+For **betting, trading, and risk management**, the goal is to **make profitable, rational decisions when the market is wrong**. It’s not about predicting every result correctly, but about consistently identifying when the bookmakers' odds (the market price) don't reflect your more accurate assessment of the true chance. When you have a superior probability model, you can:
 
-![Data Sources](https://img.shields.io/badge/data-5%20sources-blue)
-![Matches Analyzed](https://img.shields.io/badge/matches-10k+-blue)
-![Leagues Covered](https://img.shields.io/badge/leagues-8-blue)
+* **Find "Value Bets"**: Place bets only when your calculated probability suggests the odds are in your favor long-term.
+* **Act Like a Market Maker**: Professional bettors and trading firms use these models to set their own accurate odds, trade positions, and manage risk like a financial instrument.
 
-![Streamlit](https://img.shields.io/badge/Streamlit-app-green)
----
+On a fundamental level, this pursuit is about **separating the signal from the noise** to see the sport's mathematical skeleton. It helps answer:
 
-## 🧭 Project Overview
+* **What truly drives wins?** Is it possession, shot quality, or defensive pressure? A robust model quantifies the actual impact of these factors.
+* **How much of soccer is really skill vs. luck?** By measuring the predictability of outcomes, you understand the sport's inherent chaos.
+* **What is a team's "true" strength?** It provides a stable rating, less swayed by random, lucky wins or unfortunate losses.
 
-This project demonstrates the structure and results of a proprietary **theory-driven machine learning system** that predicts soccer match outcomes by estimating **expected goals (xG)** and translating them into **probabilities**. It combines **domain understanding**, **data-driven modeling**, and **probabilistic simulation** to capture the complexity of football matches beyond traditional statistics.
+Ultimately, the **"why"** is about **mastery**. It’s the desire to see the hidden game within the game, make superior decisions under uncertainty, and gain a tangible edge—whether that edge is measured in profit, trophies, or pure understanding.
 
-While the core algorithms are private, this document summarizes the theoretical approach and methodology used to estimate team and match probabilities.
+## Results
 
----
+### For xG
 
-## 🧠 General Theory
+- MAE
+- RMSE
+- R2 Score
 
-The central idea is that predicting soccer matches requires understanding:
-1. **The Sport** – how individual players and team dynamics interact to create expected goals.
-2. **The Data** – how to quantify player impact, team performance, and contextual factors.
-3. **Probability** – how uncertainty evolves during a match.
+#### HOW TO INTERPRET THE METRICS
 
----
+MAE (Mean Absolute Error):
 
-### 1. Player Impact Modeling
+- The average absolute difference between predicted xG and actual goals
+- Example: MAE of 0.35 means predictions are off by 0.35 goals on average
+- Lower is better
 
-Each player contributes differently on the offensive and defensive end.  
-To capture that:
+RMSE (Root Mean Square Error):
 
-- A ML model estimates **offensive and defensive coefficients** per player, based on historical performance.  
-- The aggregation of individual player coefficients provides a **team-level projection** of potential goal contribution.
+- Similar to MAE but gives more weight to larger errors
+- Example: RMSE of 0.45 means typical error magnitude
+- Lower is better, always higher than or equal to MAE
 
-This approach treats a team not as a static entity, but as a collection of individual contributions that interact dynamically on the field.
+R² Score (Coefficient of Determination):
 
----
+- Measures how well predictions explain variance in actual goals
+- Range: Can be negative (worse than predicting the mean) to 1.0 (perfect)
+- Example: R² of 0.15 means 15% of goal variance is explained by your model
+- Higher is better
 
-### 2. Contextual Adjustment
+### For probability
 
-Raw projections aren’t enough. Matches are influenced by **contextual variables** such as:
+- RPS
+- Log Loss
+- Calibration
 
-- Home vs. away advantage  
-- Travel distance and altitude  
-- Rest days and player fatigue  
-- Team momentum and tactical balance  
+#### HOW TO INTERPRET THE RESULTS
 
-These contextual effects are integrated through a **gradient-boosting model (XGBoost)** that refines the projected expected goals for both teams.
+LOG LOSS (Cross-Entropy):
 
----
+- Measures accuracy of probability predictions
+- Range: 0 (perfect) to infinity
+- Good football models: 0.85-1.05
+- Excellent models: <0.85
+- Penalizes confident wrong predictions heavily
 
-### 3. Simulation & Probability Estimation
+RANKED PROBABILITY SCORE (RPS):
 
-Once expected goals are projected, a **Monte Carlo simulation** runs thousands of match iterations.  
-Each iteration represents a possible realization of the game, accounting for:
+- Accounts for ordinal nature of outcomes (Home > Draw > Away)
+- Range: 0 (perfect) to 1 (worst)
+- Good football models: 0.15-0.25
+- Excellent models: <0.15
+- Lower is always better
 
-- Random variation in scoring chances  
-- Substitutions and tactical adjustments  
-- Disruptive events (yellow/red cards)  
-- Changing game states as the match progresses  
+CALIBRATION:
 
-From these simulations, the model derives probability distributions for each possible outcome and markets.
+- Perfect calibration: predicted probability = actual frequency
+- ECE < 0.02: Excellent calibration
+- ECE 0.02-0.05: Good calibration
+- ECE > 0.05: Needs improvement
+- Well-calibrated models make probability bets profitable
 
----
+BRIER SCORE:
 
-### 4. Probabilistic Game States
+- Mean squared error of probabilities
+- Range: 0 (perfect) to 1 (worst)
+- Good football models: 0.15-0.25
+- Lower is better
 
-The model treats a match as a **chain of evolving states**.  
-Each state (e.g., scoreline, player composition, remaining time) affects transition probabilities for what happens next.  
-This structure allows the system to adjust dynamically — a concept inspired by **Markov chains** — without explicitly exposing the implementation.
+KEY INSIGHTS:
 
----
+1. A model can have good log loss but poor calibration
+2. RPS is better for football than accuracy alone
+3. Calibration is crucial for making probability-based decisions
 
-## 🔬 Process Summary
+### For profitability
 
-1. Data is collected and cleaned from multiple historical sources.  
-2. Player-level impact is estimated using a machine-learning model.  
-3. Contextual features adjust baseline expectations.  
-4. Monte Carlo simulation produces outcome distributions.  
-
----
-
-## 📊 Results
-
-The notebook [`results_analysis.ipynb`](results_analysis.ipynb) contains example visualizations of:
-
-- Projected vs. actual goals  
-- Win-probability distributions  
-- Confidence intervals and simulation histograms  
-
----
-
-## 🔒 Confidentiality
-
-The specific algorithms, parameterization, and data pipelines are **proprietary** and will not be shared publicly.  
-This project is intended solely as a **portfolio demonstration** of advanced probabilistic modeling, sports analytics, and applied machine-learning design.
-
----
-
-## 💬 Author Note
-
-This project reflects my ongoing interest in the intersection of **sports analytics**, **machine learning**, and **probability theory**.  
-It illustrates how theoretical understanding and data science can work together to model real-world uncertainty.
-
----
+- ROI
