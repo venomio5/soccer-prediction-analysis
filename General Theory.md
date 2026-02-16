@@ -1,4 +1,11 @@
-## 🧭 Project Overview
+The model I built works like this:
+
+- **Individual player coefficients**. Every player gets two ratings: an offensive strength and a defensive strength. These are learned from data and intelligently differentiate good, average, and bad performers.
+- **Team strength composition**. For a given match, the offensive strength of the team is the appropriate aggregation of its starting eleven's offensive coefficients and the opponent defensive coefficients.
+- **Contextual adjustment**. A machine learning layer takes those raw team strength sums and adjusts them for external factors: home advantage, travel distance, elevation, red cards, scoreline pressure, etc. It learns how these contexts amplify or suppress the base strengths.
+- **Monte Carlo simulation**. With adjusted team strengths, I generate expected shot volumes and shot quality (xG) for each side. Then I simulate the match 10,000 times—each simulation drawing from the appropriate distributions—and record the outcomes. The result is a calibrated probability for home win, draw, away win, and more.
+
+That probability is my fair line. When the market deviates far enough from it, I have a quantifiable edge, in theory.
 
 This project demonstrates the structure and results of a proprietary **theory-driven machine learning system** that predicts soccer match outcomes by estimating **expected goals (xG)** and translating them into **probabilities**. It combines **domain understanding**, **data-driven modeling**, and **probabilistic simulation** to capture the complexity of football matches beyond traditional statistics.
 
