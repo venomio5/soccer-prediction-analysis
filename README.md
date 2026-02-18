@@ -1,6 +1,6 @@
 # ⚽ Soccer Prediction Model
 
-The primary incentive behind this project was financial. I wanted an edge in sports trading. A repeatable, quantifiable advantage over the market. 
+The primary incentive behind this project was financial. I wanted an edge in sports trading. A repeatable, quantifiable advantage over the market.
 
 That edge would not come from intuition and watching games. It would come from an algorithmic model that estimates the true probability of a match outcome, independent of bookmaker pricing.
 
@@ -10,53 +10,49 @@ This repository outlines the current architecture with explicit examples accompa
 
 To read more about how the algortihmic model was built and few examples, go [here](General%20Theory.md).
 
-So, how does it perform? The results are broken down into three areas: expected goals, probability estimates, and realised profitability.
+Now, for the results, I focused on;
+
+- **Expected Goals (xG):**  The model’s primary function is to predict Expected Goals (xG); by comparing its forecast to the actual xG generated in a match, we can validate the accuracy of its foundational building blocks.
+- **Probability:** Monte Carlo simulations translate xG into match odds, revealing where the market's pricing diverges from the model's calculated reality.
+- **Profitability:** Profitability is the ultimate filter; backtesting against market odds determines whether the edge identified in the probabilities translates into actual returns.
 
 ## Expected Goals (xG)
-The metrics used to evaluate the model are;
-- **MAE (Mean Absolute Error)**: Mean Absolute Error tells us, on average, how far off the predictions are from the actual values. Since it is in the same units as the target variable, interpretation is intuitive. An MAE of 0 is perfect. High values mean the typical error is large, and the model is missing the mark more often than not.
 
-- **RMSE (Root Mean Square Error)**: Root Mean Square Error is similar, but it places a heavier penalty on large errors. By squaring the residuals before averaging, a few very bad predictions can inflate RMSE substantially. RMSE is always greater than or equal to MAE. When the two are close, the errors are roughly uniform in size. When RMSE is considerably larger, there are outliers—predictions that are catastrophically off, dragging down the overall performance.
+Before diving into the results, here's a quick look at the three metrics I used to evaluate the model's performance;
 
-- **R² Score (Coefficient of Determination)**: R² measures how much of the variance in the target the model explains, relative to simply predicting the mean every time. A perfect score is 1.0. A score of 0 means the model performs no better than the average guess. Positive values indicate we are capturing some signal.
+- **MAE (Mean Absolute Error)**: This tells you the average size of the prediction errors. If the model predicts a team will generate 2.0 expected goals and they actually produce 1.5, that's an error of 0.5. The MAE simply averages all these individual errors across every prediction. Because it's measured in goals, it's fairly intuitive, lower numbers mean better predictions.
+- **RMSE (Root Mean Square Error)**: This works similarly to MAE but places extra weight on larger mistakes. By squaring the errors before averaging them, any particularly bad predictions stand out. When RMSE runs noticeably higher than MAE, it suggests the model occasionally produces some really bad predictions that pull down the overall performance.
+- **R² Score**: This measures how much of the real-world variation the model actually captures. A score of 1 would mean perfect predictions. A score of 0 means the model adds nothing, you'd be just as well off guessing the average every time. Any positive number indicates the model has identified some genuine patterns that help explain what's happening on the pitch.
 
-Now, the algorithmic model was built based on expected goals, so I will compare the model's projected goals versus the actual expected goals first.
+### Performance Against Expected Goals
 
-### Expected Goals vs Projected xG
-For context, a single team's match xG typically ranges from 0.5 to 2.5, which represents a solid level of accuracy. 
-
-![Alt text](assets/xg_range.png)
-
-The model had a MAE of 0.598, which shows that, on average, the model's projected xG for a given team in a match is within approximately six-tenths of a goal of the actual value. 
+To give you some context, a team's expected goals in a single match usually falls somewhere between 0.5 and 2.5. That's the range we're working with. The model posted an MAE of 0.598. In plain terms, when the model projects a team's xG for a match, it's typically off by about six-tenths of a goal. Given the range we're dealing with, that's a reasonable margin.
 
 ![Alt text](assets/mae_range.png)
 
-An RMSE of 0.786, while slightly higher than the MAE, is actually quite encouraging. 
-
-![Alt text](assets/rmse_range.png)
-
-The relatively modest gap between RMSE and MAE (0.786 - 0.598 = 0.188) indicates that the model does not suffer from catastrophic errors. There are no wild, unexplainable predictions skewing the results.
+The RMSE came in at 0.786. What matters most here is the relationship between the two error measures. The gap of 0.188 between RMSE and MAE tells me the model isn't producing those disastrous predictions I mentioned earlier. No single match is throwing everything off, the errors are fairly consistent across the board.
 
 ![Alt text](assets/rmse_mae_dif.png)
 
-A R² Score of 0.158, which means the model's projections explain nearly 16% of the variance in actual xG. 
+The R² score of 0.158 means the model explains roughly 16% of the variance in actual xG. Not overwhelming, but a clear signal that it has picked up on something real.
 
 ![Alt text](assets/rscore.png)
 
-### Goals vs Projected xG
-Moving to the model's ultimate test—predicting real-world outcomes—the Goals vs Proj xG results show how the model performs against the inherent randomness of scoring. The MAE of 0.847 indicates that, on average, the model's projected xG is within about 0.85 goals of the actual number scored by a team in a match. Given the low-scoring nature of football and the variance introduced by finishing, goalkeeping, and luck, this level of accuracy is entirely reasonable. The RMSE of 1.090, while higher, remains well-controlled and reflects the natural difficulty of forecasting discrete goal events from probabilistic chance quality.
+### Performance Against Actual Goals
 
-The R² Score of 0.072 for Goals vs Proj xG is particularly telling: it confirms that the model successfully captures real predictive signal. In a sport where even the most sophisticated metrics struggle to explain goal outcomes, explaining 7.2% of the variance demonstrates that the model has identified genuine relationships between the chances a team creates and the goals they actually score. This is precisely what an xG-based model should do.
+This is the ultimate test. The performance here has inevitably weaker results, as we move from predicting a relatively stable metric (xG) to predicting discrete, low-probability events heavily influenced by finishing ability, goalkeeping, and simply plain luck. By comparing the model's performance against actual goals with how well the post-match xG metric performs at the same task, we can get a clearer picture of both the model's capabilities and football's inherent unpredictability.
 
-### Expected Goals vs Goals
-To fully appreciate these results, it is essential to compare them against the relationship between actual xG and actual Goals (xG vs Goals). This comparison reveals the true nature of football's variance and validates your model's approach.
+Against actual goals, the model records a Mean Absolute Error of 0.847. For comparison, the actual post-match xG achieves an MAE of 0.785 when predicting the same goal outcomes. The gap between them is just 0.061 goals. To put that in perspective, the model misses the actual scoreline by roughly one additional goal every sixteen matches compared to the industry standard metric. Given that the model makes its predictions before a ball is kicked, while actual xG is calculated after the fact using detailed shot data, landing this close to the benchmark is a genuinely encouraging result.
 
-The xG vs Goals metrics show an MAE of 0.785 and an R² of 0.203. This represents the performance of the actual xG metric—the industry standard for evaluating chance quality—when tasked with predicting goals. Even this professionally compiled metric, derived from detailed shot data, can only explain about 20% of scoring outcomes and still misses the mark by nearly 0.79 goals on average. This is not a limitation of xG; it is a reflection of football itself. Goals are rare events, heavily influenced by randomness, and no model can perfectly predict them.
+![Alt text](assets/mea_dif_model_xg.png)
 
-Your model's performance (Goals vs Proj xG) compares favorably to this benchmark. The MAE of 0.847 is only 0.062 higher than the actual xG's MAE of 0.785—a remarkably small gap considering your model is generating its projections from a different feature set. Similarly, the R² of 0.072, while lower than the 0.203 achieved by actual xG, demonstrates that your model captures approximately one-third of the predictive power of the industry-standard metric.
+The RMSE tells a similar story. For actual xG, the RMSE against goals sits at 1.010, with the gap between RMSE and MAE reaching 0.225. This spread reflects that even the post-match metric produces occasional larger errors. For the model, the RMSE of 1.090 against goals, alongside its MAE, yields a gap of 0.243. The difference between these two spreads is a modest 0.018. In other words, the model generates larger errors at almost exactly the same rate as the benchmark. When it misses by a wider margin, it's doing so in precisely the situations where randomness dominates, matches where clear chances go unconverted or speculative shots somehow find the net.
 
-This comparison highlights two important truths. First, it validates that your model is operating in the correct range and capturing the right signals; it performs closer to actual xG than to random guessing. Second, it underscores the fundamental variance of football: even the "truest" measure of chance quality can only explain one-fifth of what happens on the scoresheet. Your model's projections, by closely tracking the behavior of actual xG, prove themselves to be a reliable proxy for understanding match dynamics. The small degradation in performance is not a weakness of your model, but rather a testament to the quality of actual xG data and the inherent unpredictability of the sport.
+![Alt text](assets/both_gaps.png)
 
+The R² score offers the most revealing comparison. Actual xG, despite being derived from the actual shots taken in a match, explains only 20.3% of the variance in goal scoring. This figure isn't a limitation of the metric; it's the mathematical expression of football's fundamental randomness. Against this ceiling, the model explains 7.2% of goal variance, capturing approximately one-third of the predictive power of the actual xG metric. In a sport where even the best possible measure of chance quality leaves 80% of outcomes unexplained, explaining any meaningful portion of the variance confirms that the model has successfully identified genuine relationships between match dynamics and actual scoring.
+
+![Alt text](assets/model_xg_r2.png)
 
 ## Probability
 
