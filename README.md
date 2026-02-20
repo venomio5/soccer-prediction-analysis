@@ -87,7 +87,9 @@ The market's ECE is **0.0391**. This is higher. This difference matters because 
 
 For a value-based trading strategy, this combination is actually ideal. The model's probabilities are trustworthy, when it identifies a divergence from market odds, that divergence rests on probability estimates that have proven themselves accurate across hundreds of matches. The market may be slightly sharper at calling the winner, but the model is better at telling you what the true odds really are.
 
-![Alt text](assets/1x2_cal.png)
+![Alt text](assets/1x2_model_cal.png)
+
+![Alt text](assets/1x2_market_cal.png)
 
 #### Over/Under 2.5 Goals Performance
 
@@ -99,8 +101,35 @@ The Brier Score tells a similar story. The model scores  **0.2424** , below the 
 
 ![Alt text](assets/bs_ou.png)
 
-For calibration in this market, the model's ECE is **0.0349** and the market's is  **0.0392**. The pattern holds: the model's probability estimates align more closely with actual outcome frequencies. When the model says there's a 70% chance of Over 2.5 goals, that event occurs at a rate closer to 70% than the market's equivalent predictions do.
+For calibration in this market, the model's ECE is **0.0349** and the market's is **0.0392**. The pattern holds: the model's probability estimates align more closely with actual outcome frequencies. When the model says there's a 70% chance of Over 2.5 goals, that event occurs at a rate closer to 70% than the market's equivalent predictions do.
 
-![Alt text](assets/ou_cal.png)
+![Alt text](assets/ou_model_cal.png)
+
+![Alt text](assets/ou_market_cal.png)
 
 ## Profitability
+
+The transition from *accurate probabilities* to *profitable trading* is where most models fail. A model can be statistically sound but still lose money if it cannot overcome the *vig* (bookmaker margin) or if its staking strategy is poorly aligned with its edge.
+
+To test the model's financial viability, I ran a comprehensive backtest starting with a  **$10,000 initial bankroll**. The goal was to see if the divergence between the model's reality and the market's pricing was large enough to generate meaningful returns after **5,000+ bets** in approximately 6 months.
+
+To manage size, I used **Kelly Criterion,** which is a formula used to determine the optimal size of a series of bets to maximize growth while minimizing risk, and added a custom **Confidence Multiplier** based on the data the model had on the game.
+
+To ensure this simulated growth reflected real-world constraints, two critical rules were enforced:
+
+* **Liquidity Cap:** I capped the effective bankroll used in the Kelly calculation at $10,000, even if account equity grew higher. This simulates the real-world limitation of market liquidity, where large wagers cannot be placed without moving the odds.
+* **Delayed P&L Realization:** Profit and loss were only realized *after* the game concluded. This simulates the lack of instant liquidity; I could not reinvest money that was tied up in active bets until those funds were actually returned.
+
+### The Growth Curve
+
+Looking at the bankroll's progression, the model generated a Total Profit of **$129k**, resulting in a final balance of **$139k**. Representing a **Bankroll Growth of 1,294%.**
+
+The progression of the bankroll reveals three distinct phases of market interaction:
+
+1. **The Initial Spike:** The model immediately surged from $10k to around **$40k**. This early success was driven by a high-concentration period where several high-EV bets landed simultaneously.
+2. **The 92.68% Drawdown:**  This is the most critical stress test in the data. A *drawdown* measures the peak-to-trough decline in a bankroll. Here, the balance plummeted from its $40k peak back down to approximately  **$3k**, falling well below the initial starting capital. This illustrates the high volatility of the strategy and the necessity of the 1/7th Kelly buffer to survive such a collapse without reaching total ruin.
+3. **Linear Growth and Volume:** Following the drawdown, the bankroll entered a disciplined, sustained upward trajectory.
+
+![Alt text](assets/balance_ot.png)
+
+### Key Performance Metrics
