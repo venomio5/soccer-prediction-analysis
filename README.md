@@ -8,7 +8,7 @@ So I built one.
 
 This repository outlines the current architecture with explicit examples accompanying each component, and how the model performed to the single goal of finding value where the market is wrong.
 
-To read more about how the algortihmic model was built and few examples, go [here](General%20Theory.md).
+To read more about how the algortihmic model was built and few examples, go [here](methodology.md).
 
 Now, for the results, I focused on;
 
