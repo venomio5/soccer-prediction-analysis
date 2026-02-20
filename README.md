@@ -109,27 +109,66 @@ For calibration in this market, the model's ECE is **0.0349** and the market's i
 
 ## Profitability
 
-The transition from *accurate probabilities* to *profitable trading* is where most models fail. A model can be statistically sound but still lose money if it cannot overcome the *vig* (bookmaker margin) or if its staking strategy is poorly aligned with its edge.
+The transition from *accurate probabilities* to *profitable trading* represents the final and most unforgiving test. A model can demonstrate statistical validity across hundreds of matches, but all of that becomes irrelevant if those advantages cannot survive the friction of real-world betting markets, for example, the bookmaker's margin, the liquidity of the market, the bankroll management, etc.
 
-To test the model's financial viability, I ran a comprehensive backtest starting with a  **$10,000 initial bankroll**. The goal was to see if the divergence between the model's reality and the market's pricing was large enough to generate meaningful returns after **5,000+ bets** in approximately 6 months.
+To test the model's financial viability, I ran a full backtest starting with a **$10k** over about **6 months** and more than **5k bets**. To ensure this simulated growth reflected real-world constraints, two critical rules were enforced:
 
-To manage size, I used **Kelly Criterion,** which is a formula used to determine the optimal size of a series of bets to maximize growth while minimizing risk, and added a custom **Confidence Multiplier** based on the data the model had on the game.
+* **Liquidity Cap:** Even if the bankroll grew, I capped the money used for calculating bet sizes at $10K. In real life, you can't place huge bets without moving the odds against you.
+* **Delayed P&L Realization:** Money from a bet was only available *after* the match ended. No instant reinvestment. Funds in play are tied up.
 
-To ensure this simulated growth reflected real-world constraints, two critical rules were enforced:
-
-* **Liquidity Cap:** I capped the effective bankroll used in the Kelly calculation at $10,000, even if account equity grew higher. This simulates the real-world limitation of market liquidity, where large wagers cannot be placed without moving the odds.
-* **Delayed P&L Realization:** Profit and loss were only realized *after* the game concluded. This simulates the lack of instant liquidity; I could not reinvest money that was tied up in active bets until those funds were actually returned.
+For stake sizing, I used the **Kelly Criterion** (a formula that tells you how much to bet based on your edge) with a fractional approach to manage risk. A confidence multiplier adjusted stakes upward when the model had better data on a match.
 
 ### The Growth Curve
 
-Looking at the bankroll's progression, the model generated a Total Profit of **$129k**, resulting in a final balance of **$139k**. Representing a **Bankroll Growth of 1,294%.**
-
-The progression of the bankroll reveals three distinct phases of market interaction:
-
-1. **The Initial Spike:** The model immediately surged from $10k to around **$40k**. This early success was driven by a high-concentration period where several high-EV bets landed simultaneously.
-2. **The 92.68% Drawdown:**  This is the most critical stress test in the data. A *drawdown* measures the peak-to-trough decline in a bankroll. Here, the balance plummeted from its $40k peak back down to approximately  **$3k**, falling well below the initial starting capital. This illustrates the high volatility of the strategy and the necessity of the 1/7th Kelly buffer to survive such a collapse without reaching total ruin.
-3. **Linear Growth and Volume:** Following the drawdown, the bankroll entered a disciplined, sustained upward trajectory.
-
 ![Alt text](assets/balance_ot.png)
 
+The bankroll started at **$10K** and ended at  **$139K** , with total profit of **$129K** and growth of **1,294%** . But the path had three distinct phases.
+
+1. **The spike:** The model jumped from $10K to **$40K** fast. A handful of high-value bets hit in a short window. Early success, but it set the stage for what came next.
+2. **The 92% drawdown:** From that $40K peak, the bankroll crashed to about  **$3K** . A *drawdown* means peak-to-trough drop. This one went below starting capital. If you were trading real money, this would be gut-check time. The strategy survived because fractional Kelly kept stakes small enough that a losing streak didn't wipe the account completely.
+3. **The grind:** After the low point, the bankroll settled into steady, consistent growth. No more spikes. Just disciplined upward movement.
+
 ### Key Performance Metrics
+
+Across more than 5,000 bets, the total amount wagered was approximately **$1.47M**, generating  **$129K in profit**, which equates to an  **8.76% ROI**, meaning the model made about **$9 in profit for every $100 wagered**.
+
+![Alt text](assets/roi.png)
+
+The win rate was **31.86%**, with average odds of **10.78**. At those odds, the break-even win rate is **9.27%** (calculated as 1 divided by the odds). Winning 31% of the time at these prices means each winning bet pays for multiple losses and still leaves profit. The profit factor, which compares gross winnings to gross losses, came in at  **1.18**. For every dollar lost on losing bets, the model made back that dollar plus 18 cents.
+
+![Alt text](assets/winrate.png)
+
+![Alt text](assets/profitfactor.png)
+
+### Simulation Analysis
+
+To test whether these results could be explained by luck, I ran **10k simulations** where the same bets were decided randomly based on the market's implied probabilities. If the model had no real edge, its results would sit somewhere in the middle of the simulation cloud.
+
+![Alt text](assets/edgesim.png)
+
+The gray dots represent the 10k simulations. Most cluster around lower profit and fewer wins. The blue diamond is the actual model performance, positioned far to the right on total profit and slightly elevated on wins.
+
+The numbers confirm what the chart shows. The **Sharpe ratio per bet** was **0.05**, which is modest for individual bets. But aggregated across thousands of bets, the **portfolio Sharpe ratio** reached **3.48**. For context, a Sharpe ratio above 1 is good, above 2 is excellent, and above 3 is exceptional in traditional finance. The **p-value** of **0.0013** means that if the model had no true edge, we would expect results this good by chance only 13 times out of 10,000 attempts.
+
+### Expected Value vs. Realized Profit
+
+If the model's probability estimates are accurate, higher expected value before matches should translate into higher profits over time.
+
+![Alt text](assets/evprofit.png)
+
+The scatter plot shows this relationship. Most bets cluster in the **15% to 17% expected value** range, with typical winning profits aroun **$250**. As expected value increases, the potential profit range widens, but the central tendency shifts upward. Bets with higher expected value produced larger profits when they won. There is no pattern of high-EV bets systematically underperforming.
+
+### Performance by Market Type
+
+Different betting markets produced different results. Here is the breakdown:
+
+|     Market     | Bets  | Win Rate | Avg Odds | Profit   |
+| :------------: | ----- | :------: | -------- | -------- |
+|      1X2      | 648   |  28.4%  | 4.71     | +$19,786 |
+| Asian Handicap | 1,798 |  40.7%  | 3.33     | +$68,291 |
+| Correct Score | 1,477 |   6.3%   | 29.08    | -$6,110  |
+| Over/Under 2.5 | 1,178 |  52.3%  | 2.57     | +$47,453 |
+
+![Alt text](assets/marketprofit.png)
+
+The bar chart shows profit by market with volume overlaid. Asian Handicap and Over/Under delivered over **$115K** in combined profit. 1X2 provided solid support. Correct Score had high volume but negative profit, indicating either that the edge was too small or the probability estimates were slightly optimistic in this market.
