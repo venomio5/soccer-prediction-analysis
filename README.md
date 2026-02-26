@@ -1,8 +1,8 @@
 # ⚽ Soccer Prediction Model
 
-The primary incentive behind this project was financial. I wanted an edge in sports trading. A repeatable, quantifiable advantage over the market.
+The primary incentive behind this project was to get an **edge** in sports trading. A repeatable, quantifiable advantage over the market.
 
-That edge would not come from intuition and watching games. It would come from an algorithmic model that estimates the true probability of a match outcome, independent of bookmaker pricing.
+That edge would not come from intuition or watching games. It would come from an **algorithmic model** that estimates the true probability of a match outcome, independent of bookmaker pricing.
 
 So I built one.
 
@@ -12,31 +12,25 @@ To read more about how the algortihmic model was built and few examples, go [her
 
 Now, for the results, I focused on;
 
-- **Expected Goals (xG):**  The model’s primary function is to predict Expected Goals (xG); by comparing its forecast to the actual xG generated in a match, we can validate the accuracy of its foundational building blocks.
+- **Expected Goals (xG):**  The model learned from Expected Goals (xG); by comparing its forecast to the actual xG generated in a match, we can validate the accuracy of its foundational building blocks.
 - **Probability:** Monte Carlo simulations translate xG into match odds, revealing where the market's pricing diverges from the model's calculated reality.
-- **Profitability:** Profitability is the ultimate filter; backtesting against market odds determines whether the edge identified in the probabilities translates into actual returns.
+- **Profitability:** Backtesting against market odds determines whether the edge identified in the probabilities translates into actual returns.
 
 ## Expected Goals (xG)
 
-Before diving into the results, here's a quick look at the three metrics I used to evaluate the model's performance;
-
-- **MAE (Mean Absolute Error)**: This tells you the average size of the prediction errors. If the model predicts a team will generate 2.0 expected goals and they actually produce 1.5, that's an error of 0.5. The MAE simply averages all these individual errors across every prediction. Because it's measured in goals, it's fairly intuitive, lower numbers mean better predictions.
-- **RMSE (Root Mean Square Error)**: This works similarly to MAE but places extra weight on larger mistakes. By squaring the errors before averaging them, any particularly bad predictions stand out. When RMSE runs noticeably higher than MAE, it suggests the model occasionally produces some really bad predictions that pull down the overall performance.
-- **R² Score**: This measures how much of the real-world variation the model actually captures. A score of 1 would mean perfect predictions. A score of 0 means the model adds nothing, you'd be just as well off guessing the average every time. Any positive number indicates the model has identified some genuine patterns that help explain what's happening on the pitch.
-
 ### Performance Against Expected Goals
 
-To give you some context, a team's expected goals in a single match usually falls somewhere between **0.5** and **2.5**. That's the range we're working with. The model posted an MAE of **0.598**. In plain terms, when the model projects a team's xG for a match, it's typically off by about six-tenths of a goal. Given the range we're dealing with, that's a reasonable margin.
+For context, a team's expected goals in a single match usually falls somewhere between *0.5* and *2.5*. The model posted an **MAE** *(Mean Absolute Error) *of **0.598**. In plain terms, when the model projects a team's xG for a match, it's typically off by about six-tenths of a goal. Given the range we're dealing with, that's a reasonable margin.
 
 ![Alt text](assets/mae_range.png)
 
-The RMSE came in at **0.786**. What matters most here is the relationship between the two error measures. The gap of **0.188** between RMSE and MAE tells me the model isn't producing those disastrous predictions I mentioned earlier. No single match is throwing everything off, the errors are fairly consistent across the board.
+Now, there is the **RMSE** *(Root Mean Square Error)*, which works similarly to MAE but places extra weight on larger mistakes, so its higher if there are more outliers. The model had a RMSE of **0.786**. The gap between RMSE and MAE is not that high, which means the model isn't producing those disastrous predictions I mentioned earlier. No single match is throwing everything off, the errors are fairly consistent across the board.
 
 ![Alt text](assets/rmse_mae_dif.png)
 
-The R² score of **0.158** means the model explains roughly **16%** of the variance in actual xG. Not overwhelming, but a clear signal that it has picked up on something real.
+The model against the xG had an R² score of **0.158. It means that** 
 
-![Alt text](assets/rscore.png)
+![Alt text](assets/rscore_xg.png)
 
 ### Performance Against Actual Goals
 
